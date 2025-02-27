@@ -1,0 +1,90 @@
+﻿<Window x:Class="MusicCollectionApp.HomePageWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MusicCollectionApp"
+        mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        Title="MusicApp" Height="700" Width="1050" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Grid Background="#1c0426">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+
+        <!--Menu-->
+        <Border Background="#1c0426" CornerRadius="40 0 0 40" Grid.RowSpan="2">
+            <StackPanel Margin="0 30 0 0">
+                <TextBlock Text="COLLECTION" Style="{StaticResource menuTitle}"/>
+
+                <Button Style="{StaticResource menuButton}" Tag="Home" Click="MenuButton_Click">
+                    <Grid>
+                        <TextBlock Text="Home" Margin="0 0 0 2"/>
+                        <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}" Visibility="Visible"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource menuButton}" Tag="Playlists" Click="MenuButton_Click">
+                    <Grid>
+                        <TextBlock Text="Playlists" Margin="0 0 0 2"/>
+                        <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource menuButton}">
+                    <Grid>
+                        <TextBlock Text="Tracks" Margin="0 0 0 2"/>
+                        <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource menuButton}" Tag="Albums" Click="MenuButton_Click">
+                    <Grid>
+                        <TextBlock Text="Albums" Margin="0 0 0 2"/>
+                        <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource menuButton}" Tag="Artists" Click="MenuButton_Click">
+                    <Grid>
+                        <TextBlock Text="Artists" Margin="0 0 0 2"/>
+                        <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                    </Grid>
+                </Button>
+
+                <Button Style="{StaticResource menuButton}" Tag="Genres" Click="MenuButton_Click">
+                    <Grid>
+                        <TextBlock Text="Genres" Margin="0 0 0 2"/>
+                        <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                    </Grid>
+                </Button>
+
+                <TextBlock Text="PROFILE" Style="{StaticResource menuTitle}"/>
+
+                <Button Style="{StaticResource menuButton}">
+                    <Grid>
+                        <TextBlock Text="Settings" Margin="0 0 0 2"/>
+                        <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
+                    </Grid>
+                </Button>
+            </StackPanel>
+
+        </Border>
+
+        <!--Music Section-->
+        <StackPanel Grid.Column="1" Background="#1c0426" Margin="40 60 10 0">
+            <!-- Заголовок страницы -->
+            <TextBlock Text="{Binding CurrentTitle}" Style="{StaticResource titleText}"/>
+
+            <!-- Контент с динамической сменой UserControl -->
+            <ContentControl Content="{Binding CurrentView}" />
+        </StackPanel>
+    </Grid>
+</Window>

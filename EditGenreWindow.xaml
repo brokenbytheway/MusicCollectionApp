@@ -1,0 +1,27 @@
+﻿<Window x:Class="MusicCollectionApp.EditGenreWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MusicCollectionApp"
+        mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Изменение жанра" Height="300" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Grid Background="#1c0426">
+        <Border MinWidth="200" Margin="15" Background="#e0beed" VerticalAlignment="Center" Padding="30" MaxWidth="550" CornerRadius="20">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="40" Color="#e0beed" ShadowDepth="0"></DropShadowEffect>
+            </Border.Effect>
+            <StackPanel>
+                <TextBlock Text="Изменение жанра" FontSize="16" FontWeight="Bold" Margin="0 0 0 20"></TextBlock>
+                
+                <TextBox x:Name="genreTitleTextBox" materialDesign:HintAssist.Hint="Введите название жанра" Style="{StaticResource MaterialDesignFloatingHintTextBox}"></TextBox>
+                
+                <Grid Margin="0 0 0 20">
+                    <Button HorizontalAlignment="Left" Content="Добавить" Margin="0,16,0,-16" Click="Add_Click"></Button>
+                    <Button HorizontalAlignment="Right" Content="Отменить" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,16,0,-16" Click="Cancel_Click"></Button>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
