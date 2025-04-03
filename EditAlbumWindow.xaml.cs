@@ -16,7 +16,7 @@ namespace MusicCollectionApp
         private AlbumModel album;
         private MySqlConnection connection;
         private string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
-        int userId;
+        private int userId;
         private string selectedImagePath = null;
         private List<int> selectedArtistIds = new List<int>();
         private List<CheckBox> allArtistCheckboxes = new List<CheckBox>();
@@ -37,6 +37,7 @@ namespace MusicCollectionApp
                 albumCover.Source = new BitmapImage(new Uri(album.PathToAlbumCover, UriKind.Absolute));
                 selectedImagePath = album.PathToAlbumCover;
             }
+
             LoadUserId();
             LoadArtists();
         }
@@ -59,6 +60,7 @@ namespace MusicCollectionApp
             // Загрузка списка исполнителей и отметка уже связанных с альбомом
             MySqlCommand command = new MySqlCommand("SELECT artist_id, artist_nickname FROM ARTISTS WHERE user_id=@user_id", connection);
             command.Parameters.AddWithValue("@user_id", userId);
+
             using (MySqlDataReader reader = command.ExecuteReader())
             {
                 allArtistCheckboxes.Clear();
@@ -143,15 +145,22 @@ namespace MusicCollectionApp
         {
             string newTitle = albumTitleTextBox.Text;
             int releaseYear;
-            if (string.IsNullOrWhiteSpace(newTitle) || string.IsNullOrWhiteSpace(selectedImagePath))
+
+            if (string.IsNullOrWhiteSpace(newTitle) || selectedArtistIds.Count == 0)
             {
-                MessageBox.Show("Заполните все поля и выберите хотя бы одного исполнителя!");
+                MessageBox.Show("Заполните все поля и выберите хотя бы одного исполнителя для изменения альбома!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (!int.TryParse(albumReleaseYearTextBox.Text, out releaseYear))
             {
-                MessageBox.Show("Введите корректный год выпуска альбома!");
+                MessageBox.Show("Введите корректный год выпуска альбома!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(selectedImagePath))
+            {
+                MessageBox.Show("Выберите обложку для альбома!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -165,7 +174,7 @@ namespace MusicCollectionApp
                 updateCommand.Parameters.AddWithValue("@album_id", album.Id);
                 updateCommand.ExecuteNonQuery();
 
-                // Обновляем связи с артистами
+                // Обновляем связи с исполнителями
                 MySqlCommand deleteArtistsCommand = new MySqlCommand("DELETE FROM ALBUM_ARTISTS WHERE album_id=@album_id", connection);
                 deleteArtistsCommand.Parameters.AddWithValue("@album_id", album.Id);
                 deleteArtistsCommand.ExecuteNonQuery();
@@ -214,6 +223,9 @@ namespace MusicCollectionApp
                     if (width != height)
                     {
                         MessageBox.Show("Изображение не является квадратным! Выберите другое.");
+                        selectedImagePath = null;
+                        imagePathTextBlock.Text = string.Empty;
+                        albumCover.Source = null;
                         return;
                     }
                     albumCover.Source = new BitmapImage(new Uri(selectedImagePath, UriKind.Absolute));

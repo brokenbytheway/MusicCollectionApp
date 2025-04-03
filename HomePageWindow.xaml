@@ -19,7 +19,7 @@
             <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
 
-        <!--Menu-->
+        <!-- Menu -->
         <Border Background="#1c0426" CornerRadius="40 0 0 40" Grid.RowSpan="2">
             <StackPanel Margin="0 30 0 0">
                 <TextBlock Text="COLLECTION" Style="{StaticResource menuTitle}"/>
@@ -38,7 +38,7 @@
                     </Grid>
                 </Button>
 
-                <Button Style="{StaticResource menuButton}">
+                <Button Style="{StaticResource menuButton}" Tag="Tracks" Click="MenuButton_Click">
                     <Grid>
                         <TextBlock Text="Tracks" Margin="0 0 0 2"/>
                         <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
@@ -68,23 +68,41 @@
 
                 <TextBlock Text="PROFILE" Style="{StaticResource menuTitle}"/>
 
-                <Button Style="{StaticResource menuButton}">
+                <Button Style="{StaticResource menuButton}" Tag="Settings" Click="MenuButton_Click">
                     <Grid>
                         <TextBlock Text="Settings" Margin="0 0 0 2"/>
                         <Icon:PackIconMaterial Style="{StaticResource menuButtonIcon}"/>
                     </Grid>
                 </Button>
             </StackPanel>
-
         </Border>
 
-        <!--Music Section-->
+        <Button Content="?" Width="40" Height="40" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0 10 10 0" Style="{StaticResource MaterialDesignFloatingActionButton}" Click="HelpButton_Click"/>
+        
+        <!-- UserControl Section -->
         <StackPanel Grid.Column="1" Background="#1c0426" Margin="40 60 10 0">
             <!-- Заголовок страницы -->
             <TextBlock Text="{Binding CurrentTitle}" Style="{StaticResource titleText}"/>
 
             <!-- Контент с динамической сменой UserControl -->
-            <ContentControl Content="{Binding CurrentView}" />
+            <ContentControl Content="{Binding CurrentView}"/>
         </StackPanel>
+
+        <!-- Music Player -->
+        <Border Grid.Row="1" Grid.Column="1" Background="#2d093a" Padding="10">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="100">
+                <Button Content="⏮" Width="50" Height="40" Click="PrevTrack_Click" Margin="0 -30 10 0"/>
+                <Button Content="⏯" Width="50" Height="40" Click="PlayPause_Click" Margin="0 -30 10 0"/>
+                <Button Content="⏭" Width="50" Height="40" Click="NextTrack_Click" Margin="0 -30 10 0"/>
+                
+                <TextBlock Text="Volume" Foreground="White" Margin="-280 50 0 0" VerticalAlignment="Center" Width="50"/>
+                <Slider x:Name="VolumeSlider" Foreground="#e0beed"  Margin="-130 50 5 0" Width="100" Minimum="0" Maximum="1" Value="0.5" ValueChanged="VolumeSlider_ValueChanged" VerticalAlignment="Center"/>
+                
+                <TextBlock x:Name="CurrentTimeLabel" Foreground="White" Text="00:00" Margin="10 0 10 0" VerticalAlignment="Center"/>
+                <Slider x:Name="ProgressSlider" Foreground="#e0beed" Width="300" ValueChanged="ProgressSlider_ValueChanged" Maximum="100" VerticalAlignment="Center"/>
+                <TextBlock x:Name="DurationLabel" Foreground="White" Text="00:00" Margin="10 0 0 0" VerticalAlignment="Center"/>
+                <TextBlock x:Name="CurrentTrackLabel" Foreground="White" Text="No track playing" Margin="10 0 0 0" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>

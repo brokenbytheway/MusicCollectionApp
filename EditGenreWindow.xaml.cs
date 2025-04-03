@@ -6,7 +6,7 @@ namespace MusicCollectionApp
 {
     public partial class EditGenreWindow : Window
     {
-        MySqlConnection connection;
+        private MySqlConnection connection;
         private GenresUserControl parentControl;
         private GenreModel genre;
         private string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
@@ -25,19 +25,20 @@ namespace MusicCollectionApp
         private void Add_Click(object sender, RoutedEventArgs e)
         {
             string newTitle = genreTitleTextBox.Text;
+
             if (string.IsNullOrWhiteSpace(newTitle))
             {
-                MessageBox.Show("Заполните все поля для добавления жанра!");
+                MessageBox.Show("Заполните все поля для изменения жанра!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             try
             {
-                MySqlCommand command = new MySqlCommand("UPDATE GENRES SET genre_title = @new_title WHERE genre_id = @genre_id", connection);
+                MySqlCommand command = new MySqlCommand("UPDATE GENRES SET genre_title=@new_title WHERE genre_id=@genre_id", connection);
                 command.Parameters.AddWithValue("@new_title", newTitle);
                 command.Parameters.AddWithValue("@genre_id", genre.Id);
-
                 command.ExecuteNonQuery();
+
                 parentControl.RefreshGenres();
                 Close();
             }

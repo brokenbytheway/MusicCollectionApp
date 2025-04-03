@@ -4,17 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MusicCollectionApp"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Background="#1c0426">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="171*"/>
-            <ColumnDefinition Width="29*"/>
-        </Grid.ColumnDefinitions>
         <StackPanel Grid.ColumnSpan="2">
-            <Button Content="Добавить жанр" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="Button_Click"/>
+            <Button Content="Добавить жанр" HorizontalAlignment="Left" Margin="10 10 0 0" VerticalAlignment="Top" Click="Button_Click"/>
             
-            <ScrollViewer VerticalScrollBarVisibility="Auto" Height="400" Margin="0,20,0,0">
+            <TextBox x:Name="searchTextBox" Foreground="White" Width="300" Margin="10" materialDesign:HintAssist.Hint="Поиск жанра..." Style="{StaticResource MaterialDesignFloatingHintTextBox}" TextChanged="SearchTextBox_TextChanged" BorderBrush="#7FFFFFFF"/>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Height="337" Margin="0 20 0 0">
                 <ScrollViewer.Resources>
                     <Style TargetType="ScrollBar">
                         <Setter Property="Background" Value="White"/>
@@ -24,7 +23,11 @@
                 <ItemsControl Grid.Row="1" ItemsSource="{Binding Genres}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Background="#e0beed" CornerRadius="10" Padding="10" Margin="5">
+                            <Border Background="#e0beed" CornerRadius="10" Padding="10" Margin="5" Cursor="Hand" MouseLeftButtonUp="Genre_MouseLeftButtonUp">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="40" Color="#e0beed" ShadowDepth="0"/>
+                                </Border.Effect>
+                                
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -33,17 +36,17 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto" />
-                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
                                     <StackPanel Grid.Column="0">
                                         <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="Bold" Foreground="Black"/>
-                                        <TextBlock Text="{Binding TrackCount, StringFormat='Количество треков: {0}'}" FontSize="14" Foreground="Black" Cursor="Hand" MouseLeftButtonDown="TrackCount_Click"/>
+                                        <TextBlock Text="{Binding TrackCount, StringFormat='Кол-во треков: {0}'}" FontSize="12" Foreground="Black" FontStyle="Italic"/>
                                     </StackPanel>
 
-                                    <Button Grid.Column="1" Content="✏" Foreground="Aquamarine" FontSize="14" Click="EditGenre_Click" Tag="{Binding}" Margin="0,0,5,0"/>
-                                    <Button Grid.Column="2" Content="❌" Foreground="Red" FontSize="14" Click="DeleteGenre_Click" Tag="{Binding}"/>
+                                    <Button Grid.Column="1" Content="✏" Foreground="Aqua" FontSize="14" Click="EditGenre_Click" Tag="{Binding}"/>
+                                    <Button Grid.Column="2" Content="❌" Foreground="Red" FontSize="14" Click="DeleteGenre_Click" Tag="{Binding}" Margin="5 0 0 0"/>
                                 </Grid>
                             </Border>
                         </DataTemplate>

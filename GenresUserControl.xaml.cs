@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,11 +12,13 @@ namespace MusicCollectionApp
 {
     public partial class GenresUserControl : UserControl
     {
-        MySqlConnection connection;
-        string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
-        int userId;
+        private MySqlConnection connection;
+        private string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
+        private int userId;
         private ObservableCollection<GenreModel> _genres;
-        public IEnumerable<GenreModel> Genres => _genres;
+        public ObservableCollection<GenreModel> Genres => _genres;
+        private List<GenreModel> _allGenres; // Хранит все жанры для поиска
+        public event Action<GenreModel> GenreSelected;
 
         public GenresUserControl()
         {
@@ -35,20 +38,22 @@ namespace MusicCollectionApp
                 {
                     try
                     {
-                        using (MySqlConnection connection = new MySqlConnection(mySqlCon))
+                        connection.Open();
+
+                        using (MySqlCommand command = new MySqlCommand("DELETE FROM GENRES WHERE genre_id=@genre_id and user_id=@user_id", connection))
                         {
-                            connection.Open();
-                            MySqlCommand command = new MySqlCommand("DELETE FROM GENRES WHERE genre_id=@genre_id and user_id=@user_id", connection);
                             command.Parameters.AddWithValue("@genre_id", genre.Id);
                             command.Parameters.AddWithValue("@user_id", userId);
                             command.ExecuteNonQuery();
                         }
 
                         _genres.Remove(genre);
+                        _allGenres.Remove(genre);
+                        connection.Close();
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message, "Ошибка при удалении");
+                        MessageBox.Show(ex.Message, "Ошибка при удалении жанра");
                     }
                 }
             }
@@ -58,8 +63,8 @@ namespace MusicCollectionApp
         {
             if (sender is Button button && button.Tag is GenreModel genre)
             {
-                EditGenreWindow editWindow = new EditGenreWindow(this, genre);
-                editWindow.Show();
+                EditGenreWindow editGenreWindow = new EditGenreWindow(this, genre);
+                editGenreWindow.ShowDialog();
             }
         }
 
@@ -76,30 +81,35 @@ namespace MusicCollectionApp
         private void LoadGenres()
         {
             _genres.Clear();
+            _allGenres = new List<GenreModel>();
+
             if (connection.State == ConnectionState.Closed)
             {
                 connection.Open();
             }
 
-            MySqlCommand command = new MySqlCommand("SELECT genre_id, genre_title, " + "(SELECT COUNT(*) FROM TRACKS WHERE TRACKS.genre_id = GENRES.genre_id) AS track_count " + "FROM GENRES WHERE user_id=@user_id ORDER BY genre_title", connection);
+            MySqlCommand command = new MySqlCommand("SELECT g.genre_id, g.genre_title, (SELECT COUNT(*) FROM TRACKS t WHERE t.genre_id = g.genre_id) AS track_count FROM GENRES g WHERE g.user_id = @user_id ORDER BY g.genre_title", connection);
             command.Parameters.AddWithValue("@user_id", userId);
 
             using (MySqlDataReader reader = command.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    _genres.Add(new GenreModel(
-                        reader.GetInt32("genre_id"),
-                        reader.GetString("genre_title"),
-                        reader.GetInt32("track_count")));
+                    int genreId = reader.GetInt32("genre_id");
+                    string title = reader.GetString("genre_title");
+                    int trackCount = reader.GetInt32("track_count");
+
+                    _genres.Add(new GenreModel(genreId, title, trackCount));
+                    _allGenres.Add(new GenreModel(genreId, title, trackCount));
                 }
             }
             connection.Close();
         }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             AddGenreWindow addGenreWindow = new AddGenreWindow(this);
-            addGenreWindow.Show();
+            addGenreWindow.ShowDialog();
         }
 
         public void RefreshGenres()
@@ -107,8 +117,28 @@ namespace MusicCollectionApp
             LoadGenres();
         }
 
-        private void TrackCount_Click(object sender, MouseButtonEventArgs e)
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            string searchText = searchTextBox.Text.ToLower();
+
+            _genres.Clear(); // Очищаем коллекцию
+
+            var filteredGenres = string.IsNullOrWhiteSpace(searchText)
+                ? _allGenres // Если строка пустая — вернуть все жанры
+                : _allGenres.Where(genre => genre.Title.ToLower().Contains(searchText)).ToList();
+
+            foreach (var genre in filteredGenres)
+            {
+                _genres.Add(genre);
+            }
+        }
+
+        private void Genre_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Border border && border.DataContext is GenreModel genre)
+            {
+                GenreSelected?.Invoke(genre);
+            }
         }
     }
 }

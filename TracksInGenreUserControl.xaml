@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="MusicCollectionApp.TracksInGenreUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MusicCollectionApp"
+             mc:Ignorable="d" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="#1c0426">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+            <Button Content="← Назад" Click="BackButton_Click" Margin="0 0 10 0"/>
+        </StackPanel>
+
+        <TextBox Grid.Row="1" x:Name="searchTextBox" Foreground="White" Width="300" Margin="10" materialDesign:HintAssist.Hint="Поиск трека..." Style="{StaticResource MaterialDesignFloatingHintTextBox}" TextChanged="SearchTextBox_TextChanged" BorderBrush="#7FFFFFFF"/>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer.Resources>
+                <Style TargetType="ScrollBar">
+                    <Setter Property="Background" Value="White"/>
+                </Style>
+            </ScrollViewer.Resources>
+
+            <ItemsControl ItemsSource="{Binding GenreTracks}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="#e0beed" CornerRadius="10" Padding="10" Margin="5">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="40" Color="#e0beed" ShadowDepth="0"/>
+                            </Border.Effect>
+                            
+                            <Border.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Добавить в плейлист" Click="AddToPlaylist_Click" Tag="{Binding}"/>
+                                </ContextMenu>
+                            </Border.ContextMenu>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Image Source="{Binding PathToTrackCover}" Width="50" Height="50" Margin="5"/>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding ArtistsString}" FontSize="12" FontStyle="Italic"/>
+                                    <TextBlock Text="{Binding ReleaseYear, StringFormat='Год выпуска: {0}'}" FontSize="12"/>
+                                    <TextBlock Text="{Binding Genre, StringFormat='Жанр: {0}'}" FontSize="12"/>
+                                </StackPanel>
+
+                                <Button Grid.Column="2" Content="▶" Foreground="Green" Click="PlayTrack_Click" Tag="{Binding PathToMP3File}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

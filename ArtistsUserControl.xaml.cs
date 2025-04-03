@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,11 +12,13 @@ namespace MusicCollectionApp
 {
     public partial class ArtistsUserControl : UserControl
     {
-        MySqlConnection connection;
-        string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
-        int userId;
+        private MySqlConnection connection;
+        private string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
+        private int userId;
         private ObservableCollection<ArtistModel> _artists;
-        public IEnumerable<ArtistModel> Artists => _artists;
+        public ObservableCollection<ArtistModel> Artists => _artists;
+        private List<ArtistModel> _allArtists; // Хранит всех исполнителей для поиска
+        public event Action<ArtistModel> ArtistSelected;
 
         public ArtistsUserControl()
         {
@@ -30,25 +33,27 @@ namespace MusicCollectionApp
         {
             if (sender is Button button && button.Tag is ArtistModel artist)
             {
-                MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите удалить исполнителя '{artist.Nickname}'?","Удаление исполнителя", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите удалить исполнителя '{artist.Nickname}'?", "Удаление исполнителя", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
                     try
                     {
-                        using (MySqlConnection connection = new MySqlConnection(mySqlCon))
+                        connection.Open();
+
+                        using (MySqlCommand deleteArtistcommand = new MySqlCommand("DELETE FROM ARTISTS WHERE artist_id=@artist_id and user_id=@user_id", connection))
                         {
-                            connection.Open();
-                            MySqlCommand command = new MySqlCommand("DELETE FROM ARTISTS WHERE artist_id = @artist_id and user_id=@user_id", connection);
-                            command.Parameters.AddWithValue("@artist_id", artist.Id);
-                            command.Parameters.AddWithValue("@user_id", userId);
-                            command.ExecuteNonQuery();
+                            deleteArtistcommand.Parameters.AddWithValue("@artist_id", artist.Id);
+                            deleteArtistcommand.Parameters.AddWithValue("@user_id", userId);
+                            deleteArtistcommand.ExecuteNonQuery();
                         }
 
                         _artists.Remove(artist);
+                        _allArtists.Remove(artist);
+                        connection.Close();
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message, "Ошибка при удалении");
+                        MessageBox.Show(ex.Message, "Ошибка при удалении исполнителя");
                     }
                 }
             }
@@ -58,11 +63,8 @@ namespace MusicCollectionApp
         {
             if (sender is Button button && button.Tag is ArtistModel artist)
             {
-                EditArtistWindow editWindow = new EditArtistWindow(this, artist);
-                if (editWindow.ShowDialog() == true)
-                {
-                    RefreshArtists();
-                }
+                EditArtistWindow editArtistWindow = new EditArtistWindow(this, artist);
+                editArtistWindow.ShowDialog();
             }
         }
 
@@ -79,24 +81,27 @@ namespace MusicCollectionApp
         private void LoadArtists()
         {
             _artists.Clear();
+            _allArtists = new List<ArtistModel>();
+
             if (connection.State == ConnectionState.Closed)
             {
                 connection.Open();
             }
 
-            MySqlCommand command = new MySqlCommand("SELECT artist_id, artist_nickname, path_to_artist_photo, " + "(SELECT COUNT(*) FROM TRACK_ARTISTS WHERE TRACK_ARTISTS.artist_id = ARTISTS.artist_id) AS track_count " + "FROM ARTISTS WHERE user_id=@user_id ORDER BY artist_nickname", connection);
+            MySqlCommand command = new MySqlCommand("SELECT artist_id, artist_nickname, path_to_artist_photo, (SELECT COUNT(*) FROM TRACK_ARTISTS WHERE TRACK_ARTISTS.artist_id = ARTISTS.artist_id) AS track_count FROM ARTISTS WHERE user_id=@user_id ORDER BY artist_nickname", connection);
             command.Parameters.AddWithValue("@user_id", userId);
 
             using (MySqlDataReader reader = command.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    string imagePath = reader.IsDBNull(reader.GetOrdinal("path_to_artist_photo")) ? null : reader.GetString("path_to_artist_photo");
-                    _artists.Add(new ArtistModel(
-                        reader.GetInt32("artist_id"),
-                        reader.GetString("artist_nickname"),
-                        reader.IsDBNull(reader.GetOrdinal("path_to_artist_photo")) ? "" : reader.GetString("path_to_artist_photo"),
-                        reader.GetInt32("track_count")));
+                    int artistId = reader.GetInt32("artist_id");
+                    string nickname = reader.GetString("artist_nickname");
+                    string coverPath = reader.IsDBNull(reader.GetOrdinal("path_to_artist_photo")) ? "" : reader.GetString("path_to_artist_photo");
+                    int trackCount = reader.GetInt32("track_count");
+
+                    _artists.Add(new ArtistModel(artistId, nickname, coverPath, trackCount));
+                    _allArtists.Add(new ArtistModel(artistId, nickname, coverPath, trackCount));
                 }
             }
             connection.Close();
@@ -105,7 +110,7 @@ namespace MusicCollectionApp
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             AddArtistWindow addArtistWindow = new AddArtistWindow(this);
-            addArtistWindow.Show();
+            addArtistWindow.ShowDialog();
         }
 
         public void RefreshArtists()
@@ -113,8 +118,28 @@ namespace MusicCollectionApp
             LoadArtists();
         }
 
-        private void TrackCount_Click(object sender, MouseButtonEventArgs e)
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            string searchText = searchTextBox.Text.ToLower();
+
+            _artists.Clear(); // Очищаем коллекцию
+
+            var filteredArtists = string.IsNullOrWhiteSpace(searchText)
+                ? _allArtists // Если строка пустая — вернуть всех исполнителей
+                : _allArtists.Where(artist => artist.Nickname.ToLower().Contains(searchText)).ToList();
+
+            foreach (var artist in filteredArtists)
+            {
+                _artists.Add(artist);
+            }
+        }
+
+        private void Artist_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Border border && border.DataContext is ArtistModel artist)
+            {
+                ArtistSelected?.Invoke(artist);
+            }
         }
     }
 }

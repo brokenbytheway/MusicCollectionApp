@@ -3,18 +3,22 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace MusicCollectionApp
 {
     public partial class AlbumsUserControl : UserControl
     {
-        MySqlConnection connection;
-        string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
-        int userId;
+        private MySqlConnection connection;
+        private string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
+        private int userId;
         private ObservableCollection<AlbumModel> _albums;
-        public IEnumerable<AlbumModel> Albums => _albums;
+        public ObservableCollection<AlbumModel> Albums => _albums;
+        private List<AlbumModel> _allAlbums; // Хранит все альбомы для поиска
+        public event Action<AlbumModel> AlbumSelected;
 
         public AlbumsUserControl()
         {
@@ -36,17 +40,7 @@ namespace MusicCollectionApp
                     {
                         connection.Open();
 
-                        // Сначала удаляем связи в ALBUM_ARTISTS
-                        using (MySqlCommand deleteRelationsCommand = new MySqlCommand(
-                            "DELETE FROM ALBUM_ARTISTS WHERE album_id=@album_id", connection))
-                        {
-                            deleteRelationsCommand.Parameters.AddWithValue("@album_id", album.Id);
-                            deleteRelationsCommand.ExecuteNonQuery();
-                        }
-
-                        // Затем удаляем сам альбом
-                        using (MySqlCommand deleteAlbumCommand = new MySqlCommand(
-                            "DELETE FROM ALBUMS WHERE album_id=@album_id AND user_id=@user_id", connection))
+                        using (MySqlCommand deleteAlbumCommand = new MySqlCommand("DELETE FROM ALBUMS WHERE album_id=@album_id AND user_id=@user_id", connection))
                         {
                             deleteAlbumCommand.Parameters.AddWithValue("@album_id", album.Id);
                             deleteAlbumCommand.Parameters.AddWithValue("@user_id", userId);
@@ -54,6 +48,8 @@ namespace MusicCollectionApp
                         }
 
                         _albums.Remove(album);
+                        _allAlbums.Remove(album);
+                        connection.Close();
                     }
                     catch (Exception ex)
                     {
@@ -68,7 +64,7 @@ namespace MusicCollectionApp
             if (sender is Button button && button.Tag is AlbumModel album)
             {
                 EditAlbumWindow editAlbumWindow = new EditAlbumWindow(this, album);
-                editAlbumWindow.Show();
+                editAlbumWindow.ShowDialog();
             }
         }
 
@@ -85,12 +81,14 @@ namespace MusicCollectionApp
         private void LoadAlbums()
         {
             _albums.Clear();
+            _allAlbums = new List<AlbumModel>();
+
             if (connection.State == ConnectionState.Closed)
             {
                 connection.Open();
             }
 
-            MySqlCommand command = new MySqlCommand("SELECT album_id, album_title, album_release_year, path_to_album_cover FROM ALBUMS WHERE user_id=@user_id", connection);
+            MySqlCommand command = new MySqlCommand("SELECT album_id, album_title, album_release_year, path_to_album_cover FROM ALBUMS WHERE user_id=@user_id ORDER BY album_title", connection);
             command.Parameters.AddWithValue("@user_id", userId);
 
             using (MySqlDataReader reader = command.ExecuteReader())
@@ -105,6 +103,7 @@ namespace MusicCollectionApp
                     List<string> artists = LoadAlbumArtists(albumId);
 
                     _albums.Add(new AlbumModel(albumId, title, releaseYear, coverPath, artists));
+                    _allAlbums.Add(new AlbumModel(albumId, title, releaseYear, coverPath, artists));
                 }
             }
             connection.Close();
@@ -117,7 +116,7 @@ namespace MusicCollectionApp
             using (MySqlConnection connection = new MySqlConnection(mySqlCon))
             {
                 connection.Open();
-                MySqlCommand command = new MySqlCommand("SELECT ARTISTS.artist_nickname FROM ARTISTS " + "JOIN ALBUM_ARTISTS ON ARTISTS.artist_id = ALBUM_ARTISTS.artist_id " + "WHERE ALBUM_ARTISTS.album_id = @album_id", connection);
+                MySqlCommand command = new MySqlCommand("SELECT ARTISTS.artist_nickname FROM ARTISTS JOIN ALBUM_ARTISTS ON ARTISTS.artist_id=ALBUM_ARTISTS.artist_id WHERE ALBUM_ARTISTS.album_id=@album_id", connection);
                 command.Parameters.AddWithValue("@album_id", albumId);
 
                 using (MySqlDataReader reader = command.ExecuteReader())
@@ -128,7 +127,6 @@ namespace MusicCollectionApp
                     }
                 }
             }
-
             return artists;
         }
 
@@ -140,7 +138,31 @@ namespace MusicCollectionApp
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             AddAlbumWindow addAlbumWindow = new AddAlbumWindow(this);
-            addAlbumWindow.Show();
+            addAlbumWindow.ShowDialog();
+        }
+
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string searchText = searchTextBox.Text.ToLower();
+
+            _albums.Clear(); // Очищаем коллекцию
+
+            var filteredAlbums = string.IsNullOrWhiteSpace(searchText)
+                ? _allAlbums // Если строка пустая — вернуть все альбомы
+                : _allAlbums.Where(album => album.Title.ToLower().Contains(searchText) || album.ArtistsString.ToLower().Contains(searchText)).ToList();
+
+            foreach (var album in filteredAlbums)
+            {
+                _albums.Add(album);
+            }
+        }
+
+        private void Album_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Border border && border.DataContext is AlbumModel album)
+            {
+                AlbumSelected?.Invoke(album);
+            }
         }
     }
 }

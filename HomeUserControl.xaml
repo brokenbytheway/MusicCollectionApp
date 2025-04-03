@@ -5,13 +5,35 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MusicCollectionApp"
              mc:Ignorable="d" 
-             d:DesignHeight="520" d:DesignWidth="780">
+             d:DesignHeight="450" d:DesignWidth="800">
     <Grid Background="#1c0426">
         <Border MinWidth="400" Margin="15,0,15,0" Background="#e0beed" VerticalAlignment="Center" Padding="30" MaxWidth="750" CornerRadius="20" Height="410">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="40" Color="#e0beed" ShadowDepth="0"></DropShadowEffect>
+                <DropShadowEffect BlurRadius="40" Color="#e0beed" ShadowDepth="0"/>
             </Border.Effect>
-            <Label Content="ИНСТРУКЦИЯ" Margin="96,111,96,111" FontSize="72" FontWeight="Bold"/>
+
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="Добро пожаловать!" 
+                           Foreground="Black"
+                           FontSize="50" 
+                           FontWeight="Bold"
+                           TextAlignment="Center"
+                           Margin="0,10,0,20"/>
+
+                <TextBlock Text="Не знаете, с чего начать?" 
+                           Foreground="Black"
+                           FontSize="24" 
+                           FontWeight="SemiBold"
+                           TextAlignment="Center"
+                           Margin="0,0,0,10"/>
+
+                <TextBlock Text="Ознакомьтесь с устройством приложения по нажатию соответствующей кнопки в правом верхнем углу окна!"
+                           Foreground="Black"
+                           FontSize="20"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           Width="600"/>
+            </StackPanel>
         </Border>
     </Grid>
 </UserControl>

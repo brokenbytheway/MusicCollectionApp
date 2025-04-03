@@ -1,28 +1,87 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace MusicCollectionApp
 {
     public partial class HomePageWindow : Window
     {
         private readonly HomePageViewModel _viewModel;
+        private readonly MusicPlayerService _musicPlayer;
 
         public HomePageWindow()
         {
             InitializeComponent();
             _viewModel = new HomePageViewModel();
+            _musicPlayer = MusicPlayerService.Instance;
             DataContext = _viewModel;
+            _musicPlayer.TrackChanged += UpdateTrackUI;
+
+            // Инициализация таймера для обновления слайдера
+            var timer = new System.Windows.Threading.DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1); // Обновление каждую секунду
+            timer.Tick += (s, e) => UpdateSlider();
+            timer.Start();
+        }
+
+        private void UpdateTrackUI(string trackPath)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                CurrentTrackLabel.Text = System.IO.Path.GetFileName(trackPath); // Показываем имя файла
+            });
+        }
+
+        private void UpdateSlider()
+        {
+            // Получаем текущее время и длительность трека
+            var currentTime = _musicPlayer.GetCurrentTime();
+            var duration = _musicPlayer.GetDuration();
+
+            // Обновляем слайдер, если длительность трека не равна 0
+            if (duration > 0)
+            {
+                ProgressSlider.Value = currentTime;
+                ProgressSlider.Maximum = duration;
+
+                // Обновление меток времени
+                CurrentTimeLabel.Text = TimeSpan.FromSeconds(currentTime).ToString(@"mm\:ss");
+                DurationLabel.Text = TimeSpan.FromSeconds(duration).ToString(@"mm\:ss");
+            }
+        }
+
+        private void PlayPause_Click(object sender, RoutedEventArgs e)
+        {
+            _musicPlayer.ResumeTrack();
+        }
+
+        private void PrevTrack_Click(object sender, RoutedEventArgs e)
+        {
+            _musicPlayer.PlayPrevTrack();
+        }
+
+        private void NextTrack_Click(object sender, RoutedEventArgs e)
+        {
+            _musicPlayer.PlayNextTrack();
+        }
+
+        // Обработка изменения позиции на слайдере
+        private void ProgressSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            // Когда пользователь изменяет значение слайдера, перемещаем проигрыватель
+            if (e.NewValue >= 0 && e.NewValue <= ProgressSlider.Maximum)
+            {
+                _musicPlayer.SeekToTime(e.NewValue); // Метод для перемещения проигрывателя
+            }
+        }
+
+        private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            // Изменяем громкость плеера при изменении значения слайдера
+            if (_musicPlayer != null)
+            {
+                _musicPlayer.SetVolume(e.NewValue);
+            }
         }
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
@@ -35,28 +94,89 @@ namespace MusicCollectionApp
                 switch (tag)
                 {
                     case "Home":
-                        _viewModel.SwitchView(new HomeUserControl(), "Home");
+                        _viewModel.SwitchView(new HomeUserControl(), "Welcome!");
                         break;
                     case "Playlists":
-                        _viewModel.SwitchView(new PlaylistsUserControl(), "Playlists");
+                        var playlistsControl = new PlaylistsUserControl();
+
+                        playlistsControl.PlaylistSelected += playlist =>
+                        {
+                            var tracksControl = new TracksInPlaylistUserControl(playlistsControl, playlist);
+
+                            tracksControl.BackButtonClick += () =>
+                            {
+                                _viewModel.SwitchView(playlistsControl, "Playlists");
+                            };
+
+                            _viewModel.SwitchView(tracksControl, playlist.Title);
+                        };
+
+                        _viewModel.SwitchView(playlistsControl, "Playlists");
                         break;
-                    //case "Songs":
-                    //    _viewModel.SwitchView(new SongsUserControl(), "Songs");
-                    //    break;
+                    case "Tracks":
+                        _viewModel.SwitchView(new TracksUserControl(), "Tracks");
+                        break;
                     case "Albums":
-                        _viewModel.SwitchView(new AlbumsUserControl(), "Albums");
+                        var albumsControl = new AlbumsUserControl();
+
+                        albumsControl.AlbumSelected += album =>
+                        {
+                            var tracksControl = new TracksInAlbumUserControl(albumsControl, album);
+
+                            tracksControl.BackButtonClick += () =>
+                            {
+                                _viewModel.SwitchView(albumsControl, "Albums");
+                            };
+
+                            _viewModel.SwitchView(tracksControl, album.Title);
+                        };
+
+                        _viewModel.SwitchView(albumsControl, "Albums");
                         break;
                     case "Artists":
-                        _viewModel.SwitchView(new ArtistsUserControl(), "Artists");
+                        var artistsControl = new ArtistsUserControl();
+
+                        artistsControl.ArtistSelected += artist =>
+                        {
+                            var tracksControl = new TracksInArtistUserControl(artistsControl, artist);
+
+                            tracksControl.BackButtonClick += () =>
+                            {
+                                _viewModel.SwitchView(artistsControl, "Artists");
+                            };
+
+                            _viewModel.SwitchView(tracksControl, artist.Nickname);
+                        };
+
+                        _viewModel.SwitchView(artistsControl, "Artists");
                         break;
                     case "Genres":
-                        _viewModel.SwitchView(new GenresUserControl(), "Genres");
+                        var genresControl = new GenresUserControl();
+
+                        genresControl.GenreSelected += genre =>
+                        {
+                            var tracksControl = new TracksInGenreUserControl(genresControl, genre);
+
+                            tracksControl.BackButtonClick += () =>
+                            {
+                                _viewModel.SwitchView(genresControl, "Genres");
+                            };
+
+                            _viewModel.SwitchView(tracksControl,genre.Title);
+                        };
+
+                        _viewModel.SwitchView(genresControl, "Genres");
                         break;
-                    //case "Settings":
-                    //    _viewModel.SwitchView(new SettingsUserControl(), "Settings");
-                    //    break;
+                    case "Settings":
+                        _viewModel.SwitchView(new SettingsUserControl(), "Settings");
+                        break;
                 }
             }
+        }
+
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Добро пожаловать в MusicApp!\n\nЗдесь вы можете управлять своей музыкальной коллекцией, создавать плейлисты и слушать любимые треки.\n\nЕсли у вас есть предложения по улучшению приложения, свяжитесь с разработчиком.", "Помощь", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

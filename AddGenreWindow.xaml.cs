@@ -6,9 +6,9 @@ namespace MusicCollectionApp
 {
     public partial class AddGenreWindow : Window
     {
-        MySqlConnection connection;
-        string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
-        int userId;
+        private MySqlConnection connection;
+        private string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
+        private int userId;
         private GenresUserControl parentControl;
 
         public AddGenreWindow(GenresUserControl parent)
@@ -31,9 +31,10 @@ namespace MusicCollectionApp
         private void Add_Click(object sender, RoutedEventArgs e)
         {
             string genreTitle = genreTitleTextBox.Text;
+
             if (string.IsNullOrWhiteSpace(genreTitle))
             {
-                MessageBox.Show("Заполните все поля для добавления жанра!");
+                MessageBox.Show("Заполните все поля для добавления жанра!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -46,15 +47,15 @@ namespace MusicCollectionApp
                 int count = Convert.ToInt32(checkCommand.ExecuteScalar());
                 if (count > 0)
                 {
-                    MessageBox.Show("Такой жанр уже существует в вашей коллекции!");
+                    MessageBox.Show("Такой жанр уже существует в вашей коллекции!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 MySqlCommand insertCommand = new MySqlCommand("INSERT INTO GENRES (genre_title, user_id) VALUES (@genre_title, @user_id)", connection);
                 insertCommand.Parameters.AddWithValue("@genre_title", genreTitle);
                 insertCommand.Parameters.AddWithValue("@user_id", userId);
-
                 insertCommand.ExecuteNonQuery();
+
                 parentControl.RefreshGenres();
                 Close();
             }

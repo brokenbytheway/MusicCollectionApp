@@ -136,6 +136,12 @@
     <Compile Include="AddGenreWindow.xaml.cs">
       <DependentUpon>AddGenreWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AddPlaylistWindow.xaml.cs">
+      <DependentUpon>AddPlaylistWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AddTrackWindow.xaml.cs">
+      <DependentUpon>AddTrackWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AlbumModel.cs" />
     <Compile Include="AlbumsUserControl.xaml.cs">
       <DependentUpon>AlbumsUserControl.xaml</DependentUpon>
@@ -143,6 +149,9 @@
     <Compile Include="ArtistModel.cs" />
     <Compile Include="ArtistsUserControl.xaml.cs">
       <DependentUpon>ArtistsUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChoosePlaylistWindow.xaml.cs">
+      <DependentUpon>ChoosePlaylistWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="EditAlbumWindow.xaml.cs">
       <DependentUpon>EditAlbumWindow.xaml</DependentUpon>
@@ -152,6 +161,15 @@
     </Compile>
     <Compile Include="EditGenreWindow.xaml.cs">
       <DependentUpon>EditGenreWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EditPlaylistWindow.xaml.cs">
+      <DependentUpon>EditPlaylistWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EditTrackWindow.xaml.cs">
+      <DependentUpon>EditTrackWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EditUserWindow.xaml.cs">
+      <DependentUpon>EditUserWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="GenreModel.cs" />
     <Compile Include="GenresUserControl.xaml.cs">
@@ -164,11 +182,29 @@
     <Compile Include="HomeUserControl.xaml.cs">
       <DependentUpon>HomeUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MusicPlayerService.cs" />
+    <Compile Include="PlaylistModel.cs" />
     <Compile Include="PlaylistsUserControl.xaml.cs">
       <DependentUpon>PlaylistsUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserPageWindow.xaml.cs">
-      <DependentUpon>UserPageWindow.xaml</DependentUpon>
+    <Compile Include="SettingsUserControl.xaml.cs">
+      <DependentUpon>SettingsUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TrackModel.cs" />
+    <Compile Include="TracksInAlbumUserControl.xaml.cs">
+      <DependentUpon>TracksInAlbumUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TracksInArtistUserControl.xaml.cs">
+      <DependentUpon>TracksInArtistUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TracksInGenreUserControl.xaml.cs">
+      <DependentUpon>TracksInGenreUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TracksInPlaylistUserControl.xaml.cs">
+      <DependentUpon>TracksInPlaylistUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TracksUserControl.xaml.cs">
+      <DependentUpon>TracksUserControl.xaml</DependentUpon>
     </Compile>
     <Page Include="AddAlbumWindow.xaml">
       <SubType>Designer</SubType>
@@ -179,6 +215,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="AddGenreWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AddPlaylistWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AddTrackWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -194,6 +238,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ChoosePlaylistWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="EditAlbumWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -203,6 +251,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="EditGenreWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditPlaylistWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditTrackWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditUserWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -237,7 +297,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserPageWindow.xaml">
+    <Page Include="SettingsUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TracksInAlbumUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TracksInArtistUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TracksInGenreUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TracksInPlaylistUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TracksUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

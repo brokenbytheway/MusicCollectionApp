@@ -7,61 +7,64 @@ using System.Windows.Media.Imaging;
 
 namespace MusicCollectionApp
 {
-    public partial class EditArtistWindow : Window
+    public partial class EditPlaylistWindow : Window
     {
-        private ArtistsUserControl parentControl;
-        private ArtistModel artist;
         private MySqlConnection connection;
         private string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
+        private PlaylistsUserControl parentControl;
+        private PlaylistModel playlist;
         private string selectedImagePath = null;
 
-        public EditArtistWindow(ArtistsUserControl parent, ArtistModel artistToEdit)
+        public EditPlaylistWindow(PlaylistsUserControl parent, PlaylistModel playlistToEdit)
         {
             InitializeComponent();
             parentControl = parent;
-            artist = artistToEdit;
+            playlist = playlistToEdit;
             connection = new MySqlConnection(mySqlCon);
             connection.Open();
 
             // Заносим текущие данные в окно
-            artistNicknameTextBox.Text = artist.Nickname;
-            if (!string.IsNullOrEmpty(artist.PathToArtistPhoto))
+            playlistTitleTextBox.Text = playlist.Title;
+            playlistDescriptionTextBox.Text = playlist.Description;
+            if (!string.IsNullOrEmpty(playlist.PathToPlaylistCover))
             {
-                artistImage.Source = new BitmapImage(new Uri(artist.PathToArtistPhoto, UriKind.Absolute));
-                selectedImagePath = artist.PathToArtistPhoto;
+                playlistCover.Source = new BitmapImage(new Uri(playlist.PathToPlaylistCover, UriKind.Absolute));
+                selectedImagePath = playlist.PathToPlaylistCover;
             }
         }
 
         private void Add_Click(object sender, RoutedEventArgs e)
         {
-            string newNickname = artistNicknameTextBox.Text;
+            string newTitle = playlistTitleTextBox.Text;
+            string newDescription = playlistDescriptionTextBox.Text;
 
-            if (string.IsNullOrWhiteSpace(newNickname))
+            if (string.IsNullOrWhiteSpace(newTitle) || string.IsNullOrWhiteSpace(newDescription))
             {
-                MessageBox.Show("Заполните все поля для изменения исполнителя!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Заполните все поля для изменения плейлиста!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(selectedImagePath))
             {
-                MessageBox.Show("Выберите изображение для исполнителя!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Выберите обложку для плейлиста!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             try
             {
-                MySqlCommand command = new MySqlCommand("UPDATE ARTISTS SET artist_nickname=@new_nickname, path_to_artist_photo=@new_path_to_photo WHERE artist_id = @artist_id", connection);
-                command.Parameters.AddWithValue("@new_nickname", newNickname);
-                command.Parameters.AddWithValue("@new_path_to_photo", selectedImagePath);
-                command.Parameters.AddWithValue("@artist_id", artist.Id);
+                MySqlCommand command = new MySqlCommand("UPDATE PLAYLISTS SET playlist_title=@new_title, playlist_description=@new_description, path_to_playlist_cover=@new_path_to_cover WHERE playlist_id=@playlist_id", connection);
+                command.Parameters.AddWithValue("@new_title", newTitle);
+                command.Parameters.AddWithValue("@new_description", newDescription);
+                command.Parameters.AddWithValue("@new_path_to_cover", selectedImagePath);
+                command.Parameters.AddWithValue("@playlist_id", playlist.Id);
                 command.ExecuteNonQuery();
 
-                parentControl.RefreshArtists();
+                parentControl.RefreshPlaylists();
                 Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Ошибка при обновлении исполнителя");
+                MessageBox.Show(ex.Message, "Ошибка при обновлении плейлиста");
             }
         }
 
@@ -75,7 +78,7 @@ namespace MusicCollectionApp
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 Filter = "Файлы изображений|*.jpg;*.jpeg;*.png;*.bmp",
-                Title = "Выберите изображение исполнителя"
+                Title = "Выберите обложку плейлиста"
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -94,10 +97,10 @@ namespace MusicCollectionApp
                         MessageBox.Show("Изображение не является квадратным! Пожалуйста, выберите другое.");
                         selectedImagePath = null;
                         imagePathTextBlock.Text = string.Empty;
-                        artistImage.Source = null;
+                        playlistCover.Source = null;
                         return;
                     }
-                    artistImage.Source = new BitmapImage(new Uri(selectedImagePath, UriKind.Absolute));
+                    playlistCover.Source = new BitmapImage(new Uri(selectedImagePath, UriKind.Absolute));
                 }
                 catch (Exception ex)
                 {

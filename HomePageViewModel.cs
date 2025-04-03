@@ -33,7 +33,7 @@ namespace MusicCollectionApp
         {
             // Устанавливаем страницу по умолчанию
             CurrentView = new HomeUserControl();
-            CurrentTitle = "Home";
+            CurrentTitle = "Welcome!";
         }
 
         public void SwitchView(UserControl newView, string newTitle)

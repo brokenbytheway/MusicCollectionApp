@@ -1,0 +1,28 @@
+﻿<Window x:Class="MusicCollectionApp.ChoosePlaylistWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MusicCollectionApp"
+        mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Выбор плейлиста" Height="519" Width="500" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Grid Background="#1c0426">
+        <Border MinWidth="200" Margin="15,0,15,0" Background="#e0beed" VerticalAlignment="Center" Padding="30" MaxWidth="550" CornerRadius="20" Height="436">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="40" Color="#e0beed" ShadowDepth="0"/>
+            </Border.Effect>
+
+            <StackPanel>
+                <TextBlock Text="Выбор плейлиста" FontSize="16" FontWeight="Bold" Margin="0 0 0 20"/>
+
+                <TextBlock Text="Выберите плейлисты:" FontSize="14" FontStyle="Italic" FontWeight="SemiBold" Margin="0 10 0 0"/>
+                <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="Поиск плейлиста..." Style="{StaticResource MaterialDesignFloatingHintTextBox}" TextChanged="SearchTextBox_TextChanged"/>
+                <ListBox x:Name="playlistsListBox" SelectionMode="Multiple" Height="200"/>
+                
+                <Button Content="Добавить трек в плейлист(ы)" Click="Add_Click" Margin="0 10 0 0"/>
+                <Button Content="Отменить" Style="{StaticResource MaterialDesignFlatButton}" Click="Cancel_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

@@ -12,9 +12,9 @@ namespace MusicCollectionApp
 {
     public partial class AddAlbumWindow : Window
     {
-        MySqlConnection connection;
-        string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
-        int userId;
+        private MySqlConnection connection;
+        private string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
+        private int userId;
         private AlbumsUserControl parentControl;
         private string selectedImagePath = null;
         private List<int> selectedArtistIds = new List<int>();
@@ -112,15 +112,22 @@ namespace MusicCollectionApp
         {
             string albumTitle = albumTitleTextBox.Text;
             int releaseYear;
-            if (string.IsNullOrWhiteSpace(albumTitle) || string.IsNullOrWhiteSpace(selectedImagePath) || selectedArtistIds.Count == 0)
+
+            if (string.IsNullOrWhiteSpace(albumTitle) || selectedArtistIds.Count == 0)
             {
-                MessageBox.Show("Заполните все поля и выберите хотя бы одного исполнителя!");
+                MessageBox.Show("Заполните все поля и выберите хотя бы одного исполнителя для добавления альбома!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (!int.TryParse(albumReleaseYearTextBox.Text, out releaseYear))
             {
-                MessageBox.Show("Введите корректный год выпуска альбома!");
+                MessageBox.Show("Введите корректный год выпуска альбома!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(selectedImagePath))
+            {
+                MessageBox.Show("Выберите обложку для альбома!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -133,7 +140,7 @@ namespace MusicCollectionApp
                 int count = Convert.ToInt32(checkCommand.ExecuteScalar());
                 if (count > 0)
                 {
-                    MessageBox.Show("Такой альбом уже существует в вашей коллекции!");
+                    MessageBox.Show("Такой альбом уже существует в вашей коллекции!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -188,7 +195,10 @@ namespace MusicCollectionApp
 
                     if (width != height)
                     {
-                        MessageBox.Show("Изображение не является квадратным! Пожалуйста, выберите другое.");
+                        MessageBox.Show("Изображение не является квадратным! Пожалуйста, выберите другое.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        selectedImagePath = null;
+                        imagePathTextBlock.Text = string.Empty;
+                        albumCover.Source = null;
                         return;
                     }
                     albumCover.Source = new BitmapImage(new Uri(selectedImagePath, UriKind.Absolute));
