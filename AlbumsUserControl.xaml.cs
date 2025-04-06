@@ -33,7 +33,7 @@ namespace MusicCollectionApp
         {
             if (sender is Button button && button.Tag is AlbumModel album)
             {
-                MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите удалить альбом '{album.Title}'?", "Удаление альбома", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите удалить альбом '{album.Title}'?\n\nВсе треки из этого альбома тоже будут удалены.", "Удаление альбома", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
                     try

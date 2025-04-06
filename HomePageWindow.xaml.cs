@@ -176,7 +176,7 @@ namespace MusicCollectionApp
 
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Добро пожаловать в MusicApp!\n\nЗдесь вы можете управлять своей музыкальной коллекцией, создавать плейлисты и слушать любимые треки.\n\nЕсли у вас есть предложения по улучшению приложения, свяжитесь с разработчиком.", "Помощь", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Добро пожаловать в MyMusicSpace!\n\nЗдесь вы можете управлять своей музыкальной коллекцией, создавать плейлисты и слушать любимые треки.\n\nЕсли у вас есть предложения по улучшению приложения, свяжитесь с разработчиком.", "Помощь", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

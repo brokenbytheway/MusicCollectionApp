@@ -7,11 +7,11 @@ using System.Windows;
 // Общие сведения об этой сборке предоставляются следующим набором
 // набор атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("MusicCollectionApp")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("MyMusicSpace")]
+[assembly: AssemblyDescription("Управление персональной музыкальной коллекцией")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MusicCollectionApp")]
+[assembly: AssemblyProduct("MyMusicSpace")]
 [assembly: AssemblyCopyright("Copyright ©  2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

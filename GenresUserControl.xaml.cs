@@ -33,7 +33,7 @@ namespace MusicCollectionApp
         {
             if (sender is Button button && button.Tag is GenreModel genre)
             {
-                MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите удалить жанр '{genre.Title}'?", "Удаление жанра", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите удалить жанр '{genre.Title}'?\n\nВсе треки этого жанра тоже будут удалены.", "Удаление жанра", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
                     try

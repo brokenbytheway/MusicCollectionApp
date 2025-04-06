@@ -33,7 +33,7 @@ namespace MusicCollectionApp
         {
             if (sender is Button button && button.Tag is ArtistModel artist)
             {
-                MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите удалить исполнителя '{artist.Nickname}'?", "Удаление исполнителя", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите удалить исполнителя '{artist.Nickname}'?\n\nВсе альбомы и треки этого исполнителя тоже будут удалены.", "Удаление исполнителя", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {
                     try
