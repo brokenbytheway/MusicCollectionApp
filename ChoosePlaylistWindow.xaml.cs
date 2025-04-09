@@ -134,10 +134,11 @@ namespace MusicCollectionApp
                     int newNumber = maxNumber + 1;
 
                     // Добавляем трек в плейлист
-                    MySqlCommand insertCommand = new MySqlCommand("INSERT INTO PLAYLIST_TRACKS (playlist_id, track_id, number_in_playlist, last_modified_time) VALUES (@playlist_id, @track_id, @number_in_playlist, NOW())", connection);
+                    MySqlCommand insertCommand = new MySqlCommand("INSERT INTO PLAYLIST_TRACKS (playlist_id, track_id, number_in_playlist, last_modified_time) VALUES (@playlist_id, @track_id, @number_in_playlist, @modified)", connection);
                     insertCommand.Parameters.AddWithValue("@playlist_id", playlistId);
                     insertCommand.Parameters.AddWithValue("@track_id", _track.Id);
                     insertCommand.Parameters.AddWithValue("@number_in_playlist", newNumber);
+                    insertCommand.Parameters.AddWithValue("@modified", DateTime.Now);
                     insertCommand.ExecuteNonQuery();
                 }
                 Close();

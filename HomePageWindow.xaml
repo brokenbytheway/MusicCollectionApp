@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        Title="MyMusicSpace" Height="700" Width="1050" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="MyMusicSpace" Height="700" Width="1050" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
     <Grid Background="#1c0426">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220"/>

@@ -104,7 +104,7 @@ namespace MusicCollectionApp
                         command.Parameters.AddWithValue("@salt", salt);
                         command.ExecuteNonQuery();
 
-                        MessageBox.Show("Вы успешно зарегистрировались!");
+                        MessageBox.Show("Вы успешно зарегистрировались!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                         connection.Close();
                         AuthWindow authWindow = new AuthWindow();
                         authWindow.Show();

@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web.UI.WebControls;
 using System.Windows;
 using System.Windows.Media;
 
@@ -88,21 +89,33 @@ namespace MusicCollectionApp
 
             try
             {
-                MySqlCommand command = new MySqlCommand("UPDATE USERS SET user_login=@login, user_password=@password, user_salt=@salt WHERE user_login=@currentLogin", connection);
-                command.Parameters.AddWithValue("@login", newLogin);
-                command.Parameters.AddWithValue("@password", newPassword);
-                command.Parameters.AddWithValue("@salt", salt);
-                command.Parameters.AddWithValue("@currentLogin", currentLogin);
-                command.ExecuteNonQuery();
+                MySqlCommand checkUserCommand = new MySqlCommand("SELECT COUNT(*) FROM USERS WHERE user_login = @login", connection);
+                checkUserCommand.Parameters.AddWithValue("@login", newLogin);
 
-                // Обновляем данные в окне авторизации
-                AuthWindow.login = newLogin;
-                AuthWindow.password = newPassword;
+                int userCount = Convert.ToInt32(checkUserCommand.ExecuteScalar());
+                if (userCount > 0)
+                {
+                    MessageBox.Show("Пользователь с таким логином уже существует! Пожалуйста, придумайте другой.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
 
-                // Обновляем данные в UserControl
-                parentControl.Login = newLogin;
+                else
+                {
+                    MySqlCommand command = new MySqlCommand("UPDATE USERS SET user_login=@login, user_password=@password, user_salt=@salt WHERE user_login=@currentLogin", connection);
+                    command.Parameters.AddWithValue("@login", newLogin);
+                    command.Parameters.AddWithValue("@password", newPassword);
+                    command.Parameters.AddWithValue("@salt", salt);
+                    command.Parameters.AddWithValue("@currentLogin", currentLogin);
+                    command.ExecuteNonQuery();
 
-                Close();
+                    // Обновляем данные в окне авторизации
+                    AuthWindow.login = newLogin;
+                    AuthWindow.password = newPassword;
+
+                    // Обновляем данные в UserControl
+                    parentControl.Login = newLogin;
+
+                    Close();
+                }
             }
             catch (Exception ex)
             {

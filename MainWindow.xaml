@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MusicCollectionApp"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Регистрация" Height="600" Width="1000" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="Регистрация" Height="600" Width="1000" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
     <Grid Background="#1c0426">
         <Border MinWidth="400" Margin="15" Background="#e0beed" VerticalAlignment="Center" Padding="30" MaxWidth="550" CornerRadius="20">
             <Border.Effect>
@@ -17,8 +17,8 @@
                 <TextBlock Text="Здравствуйте!" HorizontalAlignment="Center" FontSize="30" FontWeight="Bold" Margin="0 0 0 20"></TextBlock>
                 
                 <Grid Margin="0 0 0 20">
-                    <Button HorizontalAlignment="Left" Content="Регистрация"/>
-                    <Button HorizontalAlignment="Right" Content="Войти" Click="Button_Window_Auth_Click" Style="{StaticResource MaterialDesignFlatButton}"/>
+                    <Button HorizontalAlignment="Left" Content="Регистрация" Style="{StaticResource MaterialDesignFlatButton}"/>
+                    <Button HorizontalAlignment="Right" Content="Войти" Click="Button_Window_Auth_Click"/>
                 </Grid>
                 
                 <TextBox x:Name="textBoxLogin" materialDesign:HintAssist.Hint="Введите логин" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>

@@ -82,7 +82,7 @@ namespace MusicCollectionApp
 
                 if (count == 1)
                 {
-                    MessageBox.Show("Вы успешно вошли в аккаунт!");
+                    MessageBox.Show("Вы успешно вошли в аккаунт!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                     connection.Close();
                     HomePageWindow homePageWindow = new HomePageWindow();
                     homePageWindow.Show();

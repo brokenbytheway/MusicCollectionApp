@@ -11,9 +11,11 @@
         <StackPanel Grid.ColumnSpan="2">
             <Button Content="Добавить плейлист" HorizontalAlignment="Left" Margin="10 10 0 0" VerticalAlignment="Top" Click="Button_Click"/>
             
+            <Button Content="Импорт из M3U-файла" HorizontalAlignment="Left" Margin="10 10 0 0" VerticalAlignment="Top" Click="ImportM3U_Click"/>
+
             <TextBox x:Name="searchTextBox" Foreground="White" Width="300" Margin="10" materialDesign:HintAssist.Hint="Поиск плейлиста..." Style="{StaticResource MaterialDesignFloatingHintTextBox}" TextChanged="SearchTextBox_TextChanged" BorderBrush="#7FFFFFFF"/>
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto" Height="337" Margin="0 20 0 0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Height="293" Margin="0 20 0 0">
                 <ScrollViewer.Resources>
                     <Style TargetType="ScrollBar">
                         <Setter Property="Background" Value="White"/>
@@ -27,6 +29,13 @@
                                 <Border.Effect>
                                     <DropShadowEffect BlurRadius="40" Color="#e0beed" ShadowDepth="0"/>
                                 </Border.Effect>
+
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Экспорт в формат M3U" Click="ExportM3U_Click" Tag="{Binding}"/>
+                                        <MenuItem Header="Создать отчет по плейлисту" Click="CreateReport_Click" Tag="{Binding}"/>
+                                    </ContextMenu>
+                                </Border.ContextMenu>
                                 
                                 <Grid>
                                     <Grid.ColumnDefinitions>

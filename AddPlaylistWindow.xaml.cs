@@ -22,6 +22,11 @@ namespace MusicCollectionApp
             LoadUserId();
         }
 
+        public AddPlaylistWindow(PlaylistsUserControl parent, string title) : this(parent)
+        {
+            playlistTitleTextBox.Text = title;
+        }
+
         private void LoadUserId()
         {
             connection = new MySqlConnection(mySqlCon);
@@ -70,6 +75,7 @@ namespace MusicCollectionApp
                 insertCommand.ExecuteNonQuery();
 
                 parentControl.RefreshPlaylists();
+                DialogResult = true;
                 Close();
             }
             catch (Exception ex)
