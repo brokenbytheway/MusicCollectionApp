@@ -50,6 +50,11 @@ namespace MusicCollectionApp
                 textBoxLogin.Background = Brushes.LightPink;
                 return;
             }
+            else
+            {
+                textBoxLogin.ToolTip = null;
+                textBoxLogin.Background = Brushes.Transparent;
+            }
 
             if (password.Length < 8)
             {
@@ -57,11 +62,11 @@ namespace MusicCollectionApp
                 passBox.Background = Brushes.LightPink;
                 return;
             }
-
-            textBoxLogin.ToolTip = null;
-            textBoxLogin.Background = Brushes.Transparent;
-            passBox.ToolTip = null;
-            passBox.Background = Brushes.Transparent;
+            else
+            {
+                passBox.ToolTip = null;
+                passBox.Background = Brushes.Transparent;
+            }
 
             // Хэширование введённого пароля с солью из БД
             LoadUserSalt();
