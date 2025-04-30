@@ -81,48 +81,45 @@ namespace MusicCollectionApp
                 passBox2.Background = Brushes.Transparent;
             }
 
-            if (login.Length >= 5 && IsValidPassword(password) && password == password2)
+            // Хэширование введённого пароля с солью
+            string salt = GenerateSalt();
+            string hashedPassword = GenerateHash(password, salt);
+            password = hashedPassword;
+
+            if (connection.State == ConnectionState.Closed)
             {
-                // Хэширование введённого пароля с солью
-                string salt = GenerateSalt();
-                string hashedPassword = GenerateHash(password, salt);
-                password = hashedPassword;
+                connection.Open();
+            }
 
-                if (connection.State == ConnectionState.Closed)
+            try
+            {
+                MySqlCommand checkUserCommand = new MySqlCommand("SELECT COUNT(*) FROM USERS WHERE user_login = @login", connection);
+                checkUserCommand.Parameters.AddWithValue("@login", login);
+
+                int userCount = Convert.ToInt32(checkUserCommand.ExecuteScalar());
+                if (userCount > 0)
                 {
-                    connection.Open();
+                    MessageBox.Show("Пользователь с таким логином уже существует! Пожалуйста, придумайте другой.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
 
-                try
+                else
                 {
-                    MySqlCommand checkUserCommand = new MySqlCommand("SELECT COUNT(*) FROM USERS WHERE user_login = @login", connection);
-                    checkUserCommand.Parameters.AddWithValue("@login", login);
+                    MySqlCommand command = new MySqlCommand("INSERT INTO USERS (user_login, user_password, user_salt) VALUES (@login, @password, @salt)", connection);
+                    command.Parameters.AddWithValue("@login", login);
+                    command.Parameters.AddWithValue("@password", hashedPassword);
+                    command.Parameters.AddWithValue("@salt", salt);
+                    command.ExecuteNonQuery();
 
-                    int userCount = Convert.ToInt32(checkUserCommand.ExecuteScalar());
-                    if (userCount > 0)
-                    {
-                        MessageBox.Show("Пользователь с таким логином уже существует! Пожалуйста, придумайте другой.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
-
-                    else
-                    {
-                        MySqlCommand command = new MySqlCommand("INSERT INTO USERS (user_login, user_password, user_salt) VALUES (@login, @password, @salt)", connection);
-                        command.Parameters.AddWithValue("@login", login);
-                        command.Parameters.AddWithValue("@password", hashedPassword);
-                        command.Parameters.AddWithValue("@salt", salt);
-                        command.ExecuteNonQuery();
-
-                        MessageBox.Show("Вы успешно зарегистрировались!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                        connection.Close();
-                        AuthWindow authWindow = new AuthWindow();
-                        authWindow.Show();
-                        Close();
-                    }
+                    MessageBox.Show("Вы успешно зарегистрировались!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    connection.Close();
+                    AuthWindow authWindow = new AuthWindow();
+                    authWindow.Show();
+                    Close();
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Ошибка при регистрации аккаунта");
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Ошибка при регистрации аккаунта");
             }
         }
 

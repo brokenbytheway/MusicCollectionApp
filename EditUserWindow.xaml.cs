@@ -60,6 +60,11 @@ namespace MusicCollectionApp
                 textBoxLogin.Background = Brushes.LightPink;
                 return;
             }
+            else
+            {
+                textBoxLogin.ToolTip = null;
+                textBoxLogin.Background = Brushes.Transparent;
+            }
 
             if (!IsValidPassword(newPassword))
             {
@@ -67,20 +72,23 @@ namespace MusicCollectionApp
                 passBox.Background = Brushes.LightPink;
                 return;
             }
+            else
+            {
+                passBox.ToolTip = null;
+                passBox.Background = Brushes.Transparent;
+            }
 
-            else if (newPassword != confirmPassword)
+            if (newPassword != confirmPassword)
             {
                 passBox2.ToolTip = "Пароли не совпадают!";
                 passBox2.Background = Brushes.LightPink;
                 return;
             }
-
-            textBoxLogin.ToolTip = null;
-            textBoxLogin.Background = Brushes.Transparent;
-            passBox.ToolTip = null;
-            passBox.Background = Brushes.Transparent;
-            passBox2.ToolTip = null;
-            passBox2.Background = Brushes.Transparent;
+            else
+            {
+                passBox2.ToolTip = null;
+                passBox2.Background = Brushes.Transparent;
+            }
 
             // Хэширование введённого пароля с солью
             string salt = GenerateSalt();
