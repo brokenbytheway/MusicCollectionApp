@@ -179,7 +179,7 @@ namespace MusicCollectionApp
 
             var filteredTracks = string.IsNullOrWhiteSpace(searchText)
                 ? _allPlaylistTracks // Если строка пустая — вернуть все треки
-                : _allPlaylistTracks.Where(track => track.Title.ToLower().Contains(searchText)).ToList();
+                : _allPlaylistTracks.Where(track => track.Title.ToLower().Contains(searchText) || track.ArtistsString.ToLower().Contains(searchText)).ToList();
 
             foreach (var track in filteredTracks)
             {
