@@ -27,7 +27,14 @@ namespace MusicCollectionApp
             artistNicknameTextBox.Text = artist.Nickname;
             if (!string.IsNullOrEmpty(artist.PathToArtistPhoto))
             {
-                artistImage.Source = new BitmapImage(new Uri(artist.PathToArtistPhoto, UriKind.Absolute));
+                try
+                {
+                    artistImage.Source = new BitmapImage(new Uri(artist.PathToArtistPhoto, UriKind.Absolute));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Файл с изображением был удалён или перемещён!");
+                }
                 selectedImagePath = artist.PathToArtistPhoto;
             }
         }

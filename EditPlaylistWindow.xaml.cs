@@ -28,7 +28,14 @@ namespace MusicCollectionApp
             playlistDescriptionTextBox.Text = playlist.Description;
             if (!string.IsNullOrEmpty(playlist.PathToPlaylistCover))
             {
-                playlistCover.Source = new BitmapImage(new Uri(playlist.PathToPlaylistCover, UriKind.Absolute));
+                try
+                {
+                    playlistCover.Source = new BitmapImage(new Uri(playlist.PathToPlaylistCover, UriKind.Absolute));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Файл с изображением был удалён или перемещён!");
+                }
                 selectedImagePath = playlist.PathToPlaylistCover;
             }
         }

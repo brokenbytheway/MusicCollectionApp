@@ -34,7 +34,14 @@ namespace MusicCollectionApp
             albumReleaseYearTextBox.Text = album.ReleaseYear.ToString();
             if (!string.IsNullOrEmpty(album.PathToAlbumCover))
             {
-                albumCover.Source = new BitmapImage(new Uri(album.PathToAlbumCover, UriKind.Absolute));
+                try
+                {
+                    albumCover.Source = new BitmapImage(new Uri(album.PathToAlbumCover, UriKind.Absolute));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Файл с изображением был удалён или перемещён!");
+                }
                 selectedImagePath = album.PathToAlbumCover;
             }
 
