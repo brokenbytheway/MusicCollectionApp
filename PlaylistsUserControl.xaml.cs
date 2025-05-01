@@ -153,7 +153,7 @@ namespace MusicCollectionApp
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
-                    Filter = "M3U-файл|*.m3u",
+                    Filter = "M3U-файл (*.m3u)|*.m3u",
                     FileName = playlist.Title + ".m3u"
                 };
 
@@ -192,7 +192,7 @@ namespace MusicCollectionApp
             {
                 OpenFileDialog openFileDialog = new OpenFileDialog
                 {
-                    Filter = "M3U-файл|*.m3u",
+                    Filter = "M3U-файл (*.m3u)|*.m3u",
                     Title = "Выберите M3U-файл для импорта"
                 };
 
@@ -273,7 +273,7 @@ namespace MusicCollectionApp
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
-                    Filter = "Документ Word|*.docx",
+                    Filter = "Документ Word (*.docx)|*.docx",
                     FileName = $"{playlist.Title}_отчет.docx"
                 };
 
