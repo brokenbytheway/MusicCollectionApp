@@ -26,7 +26,7 @@ namespace MusicCollectionApp
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = "MP3 files (*.mp3)|*.mp3",
+                Filter = "MP3-файлы (*.mp3)|*.mp3",
                 Title = "Выберите MP3-файл"
             };
 

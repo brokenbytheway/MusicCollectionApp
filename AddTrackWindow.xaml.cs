@@ -285,7 +285,7 @@ namespace MusicCollectionApp
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = "Файлы изображений|*.jpg;*.jpeg;*.png;*.bmp",
+                Filter = "Файлы изображений (*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp",
                 Title = "Выберите обложку трека"
             };
 
@@ -321,7 +321,7 @@ namespace MusicCollectionApp
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = "MP3 files (*.mp3)|*.mp3",
+                Filter = "MP3-файлы (*.mp3)|*.mp3",
                 Title = "Выберите MP3-файл"
             };
 

@@ -212,7 +212,7 @@ namespace MusicCollectionApp
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = "Файлы изображений|*.jpg;*.jpeg;*.png;*.bmp",
+                Filter = "Файлы изображений (*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp",
                 Title = "Выберите обложку альбома"
             };
 
