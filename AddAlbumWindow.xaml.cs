@@ -133,17 +133,6 @@ namespace MusicCollectionApp
 
             try
             {
-                MySqlCommand checkCommand = new MySqlCommand("SELECT COUNT(*) FROM ALBUMS WHERE album_title=@album_title AND user_id=@user_id", connection);
-                checkCommand.Parameters.AddWithValue("@album_title", albumTitle);
-                checkCommand.Parameters.AddWithValue("@user_id", userId);
-
-                int count = Convert.ToInt32(checkCommand.ExecuteScalar());
-                if (count > 0)
-                {
-                    MessageBox.Show("Такой альбом уже существует в вашей коллекции!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
                 MySqlCommand insertCommand = new MySqlCommand("INSERT INTO ALBUMS (album_title, album_release_year, path_to_album_cover, user_id) VALUES (@album_title, @album_release_year, @path_to_album_cover, @user_id)", connection);
                 insertCommand.Parameters.AddWithValue("@album_title", albumTitle);
                 insertCommand.Parameters.AddWithValue("@album_release_year", releaseYear);

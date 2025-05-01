@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using System;
 using System.Drawing;
@@ -12,6 +13,7 @@ namespace MusicCollectionApp
         private ArtistsUserControl parentControl;
         private ArtistModel artist;
         private MySqlConnection connection;
+        private int userId;
         private string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
         private string selectedImagePath = null;
 
@@ -20,6 +22,7 @@ namespace MusicCollectionApp
             InitializeComponent();
             parentControl = parent;
             artist = artistToEdit;
+            LoadUserId();
             connection = new MySqlConnection(mySqlCon);
             connection.Open();
 
@@ -37,6 +40,16 @@ namespace MusicCollectionApp
                 }
                 selectedImagePath = artist.PathToArtistPhoto;
             }
+        }
+
+        private void LoadUserId()
+        {
+            connection = new MySqlConnection(mySqlCon);
+            connection.Open();
+            MySqlCommand command = new MySqlCommand("SELECT user_id FROM USERS WHERE user_login=@login AND user_password=@password", connection);
+            command.Parameters.AddWithValue("@login", AuthWindow.login);
+            command.Parameters.AddWithValue("@password", AuthWindow.password);
+            userId = Convert.ToInt32(command.ExecuteScalar());
         }
 
         private void Add_Click(object sender, RoutedEventArgs e)
@@ -57,6 +70,17 @@ namespace MusicCollectionApp
 
             try
             {
+                MySqlCommand checkCommand = new MySqlCommand("SELECT COUNT(*) FROM ARTISTS WHERE artist_nickname=@artist_nickname AND user_id=@user_id", connection);
+                checkCommand.Parameters.AddWithValue("@artist_nickname", newNickname);
+                checkCommand.Parameters.AddWithValue("@user_id", userId);
+
+                int count = Convert.ToInt32(checkCommand.ExecuteScalar());
+                if (count > 0)
+                {
+                    MessageBox.Show("Такой исполнитель уже существует в вашей коллекции!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 MySqlCommand command = new MySqlCommand("UPDATE ARTISTS SET artist_nickname=@new_nickname, path_to_artist_photo=@new_path_to_photo WHERE artist_id = @artist_id", connection);
                 command.Parameters.AddWithValue("@new_nickname", newNickname);
                 command.Parameters.AddWithValue("@new_path_to_photo", selectedImagePath);

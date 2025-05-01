@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using System;
 using System.Drawing;
@@ -10,6 +11,7 @@ namespace MusicCollectionApp
     public partial class EditPlaylistWindow : Window
     {
         private MySqlConnection connection;
+        private int userId;
         private string mySqlCon = "Server=37.128.207.248; port=3306; database=musiccollection; user=listener_user; password=password;";
         private PlaylistsUserControl parentControl;
         private PlaylistModel playlist;
@@ -20,6 +22,7 @@ namespace MusicCollectionApp
             InitializeComponent();
             parentControl = parent;
             playlist = playlistToEdit;
+            LoadUserId();
             connection = new MySqlConnection(mySqlCon);
             connection.Open();
 
@@ -38,6 +41,16 @@ namespace MusicCollectionApp
                 }
                 selectedImagePath = playlist.PathToPlaylistCover;
             }
+        }
+
+        private void LoadUserId()
+        {
+            connection = new MySqlConnection(mySqlCon);
+            connection.Open();
+            MySqlCommand command = new MySqlCommand("SELECT user_id FROM USERS WHERE user_login=@login AND user_password=@password", connection);
+            command.Parameters.AddWithValue("@login", AuthWindow.login);
+            command.Parameters.AddWithValue("@password", AuthWindow.password);
+            userId = Convert.ToInt32(command.ExecuteScalar());
         }
 
         private void Add_Click(object sender, RoutedEventArgs e)
@@ -59,6 +72,17 @@ namespace MusicCollectionApp
 
             try
             {
+                MySqlCommand checkCommand = new MySqlCommand("SELECT COUNT(*) FROM PLAYLISTS WHERE playlist_title=@playlist_title AND user_id=@user_id", connection);
+                checkCommand.Parameters.AddWithValue("@playlist_title", newTitle);
+                checkCommand.Parameters.AddWithValue("@user_id", userId);
+
+                int count = Convert.ToInt32(checkCommand.ExecuteScalar());
+                if (count > 0)
+                {
+                    MessageBox.Show("Такой плейлист уже существует в вашей коллекции!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 MySqlCommand command = new MySqlCommand("UPDATE PLAYLISTS SET playlist_title=@new_title, playlist_description=@new_description, path_to_playlist_cover=@new_path_to_cover WHERE playlist_id=@playlist_id", connection);
                 command.Parameters.AddWithValue("@new_title", newTitle);
                 command.Parameters.AddWithValue("@new_description", newDescription);
