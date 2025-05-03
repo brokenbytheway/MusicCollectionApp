@@ -176,7 +176,27 @@ namespace MusicCollectionApp
 
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Добро пожаловать в MyMusicSpace!\n\nЗдесь вы можете управлять своей музыкальной коллекцией, создавать плейлисты и слушать любимые треки.\n\nЕсли у вас есть предложения по улучшению приложения, свяжитесь с разработчиком.", "Помощь", MessageBoxButton.OK, MessageBoxImage.Information);
+            string helpFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Руководство пользователя.docx");
+
+            if (System.IO.File.Exists(helpFilePath))
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = helpFilePath,
+                        UseShellExecute = true
+                    });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Ошибка при открытии руководства пользователя");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Файл с руководством пользователя не найден.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
