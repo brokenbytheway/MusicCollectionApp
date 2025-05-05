@@ -173,30 +173,5 @@ namespace MusicCollectionApp
                 }
             }
         }
-
-        private void HelpButton_Click(object sender, RoutedEventArgs e)
-        {
-            string helpFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Руководство пользователя.docx");
-
-            if (System.IO.File.Exists(helpFilePath))
-            {
-                try
-                {
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                    {
-                        FileName = helpFilePath,
-                        UseShellExecute = true
-                    });
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Ошибка при открытии руководства пользователя");
-                }
-            }
-            else
-            {
-                MessageBox.Show("Файл с руководством пользователя не найден.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
     }
 }
