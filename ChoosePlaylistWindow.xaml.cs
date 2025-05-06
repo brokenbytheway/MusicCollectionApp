@@ -15,6 +15,7 @@ namespace MusicCollectionApp
         private List<int> selectedPlaylistIds = new List<int>();
         private List<CheckBox> allPlaylistCheckboxes = new List<CheckBox>();
         private TrackModel _track;
+        private int selectedPlaylistId = -1;
 
         public ChoosePlaylistWindow(TrackModel track)
         {
@@ -74,19 +75,35 @@ namespace MusicCollectionApp
 
         private void PlaylistCheckbox_Checked(object sender, RoutedEventArgs e)
         {
+            if (playlistsListBox.Items.Count > 1)
+            {
+                foreach (CheckBox elem in playlistsListBox.Items)
+                {
+                    if (elem.IsChecked == true && elem != (CheckBox)sender)
+                    {
+                        elem.IsChecked = false;
+                    }
+                }
+            }
+
             CheckBox checkBox = sender as CheckBox;
             if (checkBox != null && checkBox.Tag != null)
             {
-                selectedPlaylistIds.Add(Convert.ToInt32(checkBox.Tag));
+                selectedPlaylistId = Convert.ToInt32(checkBox.Tag);
             }
         }
 
         private void PlaylistCheckbox_Unchecked(object sender, RoutedEventArgs e)
         {
-            CheckBox checkBox = sender as CheckBox;
-            if (checkBox != null && checkBox.Tag != null)
+            // Проверяем, остался ли какой-либо чекбокс с галочкой
+            var stillChecked = allPlaylistCheckboxes.FirstOrDefault(cb => cb.IsChecked == true);
+            if (stillChecked != null)
             {
-                selectedPlaylistIds.Remove(Convert.ToInt32(checkBox.Tag));
+                selectedPlaylistId = Convert.ToInt32(stillChecked.Tag);
+            }
+            else
+            {
+                selectedPlaylistId = -1; // Ничего не выбрано
             }
         }
 
@@ -106,7 +123,7 @@ namespace MusicCollectionApp
 
         private void Add_Click(object sender, RoutedEventArgs e)
         {
-            if (selectedPlaylistIds.Count == 0)
+            if (selectedPlaylistId == -1)
             {
                 MessageBox.Show("Выберите хотя бы один плейлист!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -114,33 +131,30 @@ namespace MusicCollectionApp
 
             try
             {
-                foreach (int playlistId in selectedPlaylistIds)
+                MySqlCommand checkCommand = new MySqlCommand("SELECT COUNT(*) FROM PLAYLIST_TRACKS WHERE playlist_id=@playlist_id AND track_id=@track_id", connection);
+                checkCommand.Parameters.AddWithValue("@playlist_id", selectedPlaylistId);
+                checkCommand.Parameters.AddWithValue("@track_id", _track.Id);
+
+                int count = Convert.ToInt32(checkCommand.ExecuteScalar());
+                if (count > 0)
                 {
-                    MySqlCommand checkCommand = new MySqlCommand("SELECT COUNT(*) FROM PLAYLIST_TRACKS WHERE playlist_id=@playlist_id AND track_id=@track_id", connection);
-                    checkCommand.Parameters.AddWithValue("@playlist_id", playlistId);
-                    checkCommand.Parameters.AddWithValue("@track_id", _track.Id);
-
-                    int count = Convert.ToInt32(checkCommand.ExecuteScalar());
-                    if (count > 0)
-                    {
-                        MessageBox.Show("Такой трек уже есть в этом плейлисте!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-
-                    // Получаем максимальный number_in_playlist для текущего плейлиста
-                    MySqlCommand getMaxNumberCommand = new MySqlCommand("SELECT IFNULL(MAX(number_in_playlist), 0) FROM PLAYLIST_TRACKS WHERE playlist_id = @playlist_id", connection);
-                    getMaxNumberCommand.Parameters.AddWithValue("@playlist_id", playlistId);
-                    int maxNumber = Convert.ToInt32(getMaxNumberCommand.ExecuteScalar());
-                    int newNumber = maxNumber + 1;
-
-                    // Добавляем трек в плейлист
-                    MySqlCommand insertCommand = new MySqlCommand("INSERT INTO PLAYLIST_TRACKS (playlist_id, track_id, number_in_playlist, last_modified_time) VALUES (@playlist_id, @track_id, @number_in_playlist, @modified)", connection);
-                    insertCommand.Parameters.AddWithValue("@playlist_id", playlistId);
-                    insertCommand.Parameters.AddWithValue("@track_id", _track.Id);
-                    insertCommand.Parameters.AddWithValue("@number_in_playlist", newNumber);
-                    insertCommand.Parameters.AddWithValue("@modified", DateTime.Now);
-                    insertCommand.ExecuteNonQuery();
+                    MessageBox.Show("Такой трек уже есть в этом плейлисте!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
+
+                // Получаем максимальный number_in_playlist для текущего плейлиста
+                MySqlCommand getMaxNumberCommand = new MySqlCommand("SELECT IFNULL(MAX(number_in_playlist), 0) FROM PLAYLIST_TRACKS WHERE playlist_id = @playlist_id", connection);
+                getMaxNumberCommand.Parameters.AddWithValue("@playlist_id", selectedPlaylistId);
+                int maxNumber = Convert.ToInt32(getMaxNumberCommand.ExecuteScalar());
+                int newNumber = maxNumber + 1;
+
+                // Добавляем трек в плейлист
+                MySqlCommand insertCommand = new MySqlCommand("INSERT INTO PLAYLIST_TRACKS (playlist_id, track_id, number_in_playlist, last_modified_time) VALUES (@playlist_id, @track_id, @number_in_playlist, @modified)", connection);
+                insertCommand.Parameters.AddWithValue("@playlist_id", selectedPlaylistId);
+                insertCommand.Parameters.AddWithValue("@track_id", _track.Id);
+                insertCommand.Parameters.AddWithValue("@number_in_playlist", newNumber);
+                insertCommand.Parameters.AddWithValue("@modified", DateTime.Now);
+                insertCommand.ExecuteNonQuery();
                 Close();
             }
             catch (Exception ex)
@@ -152,6 +166,16 @@ namespace MusicCollectionApp
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void playlistsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (playlistsListBox.SelectedItems.Count > 1)
+            {
+                var lastSelected = playlistsListBox.SelectedItems[playlistsListBox.SelectedItems.Count - 1];
+                playlistsListBox.SelectedItems.Clear();
+                playlistsListBox.SelectedItem = lastSelected;
+            }
         }
     }
 }

@@ -16,11 +16,11 @@
             <StackPanel>
                 <TextBlock Text="Выбор плейлиста" FontSize="16" FontWeight="Bold" Margin="0 0 0 20"/>
 
-                <TextBlock Text="Выберите плейлисты:" FontSize="14" FontStyle="Italic" FontWeight="SemiBold" Margin="0 10 0 0"/>
+                <TextBlock Text="Выберите плейлист:" FontSize="14" FontStyle="Italic" FontWeight="SemiBold" Margin="0 10 0 0"/>
                 <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="Поиск плейлиста..." Style="{StaticResource MaterialDesignFloatingHintTextBox}" TextChanged="SearchTextBox_TextChanged"/>
-                <ListBox x:Name="playlistsListBox" SelectionMode="Multiple" Height="200"/>
+                <ListBox x:Name="playlistsListBox" SelectionMode="Single" Height="200" SelectionChanged="playlistsListBox_SelectionChanged"/>
                 
-                <Button Content="Добавить трек в плейлист(ы)" Click="Add_Click" Margin="0 10 0 0"/>
+                <Button Content="Добавить трек в плейлист" Click="Add_Click" Margin="0 10 0 0"/>
                 <Button Content="Отменить" Style="{StaticResource MaterialDesignFlatButton}" Click="Cancel_Click"/>
             </StackPanel>
         </Border>

@@ -109,10 +109,15 @@ namespace MusicCollectionApp
 
         private void GenreCheckbox_Unchecked(object sender, RoutedEventArgs e)
         {
-            CheckBox checkBox = sender as CheckBox;
-            if (checkBox != null && checkBox.Tag != null)
+            // Проверяем, остался ли какой-либо чекбокс с галочкой
+            var stillChecked = allGenreCheckboxes.FirstOrDefault(cb => cb.IsChecked == true);
+            if (stillChecked != null)
             {
-                selectedGenreId = Convert.ToInt32(checkBox.Tag);
+                selectedGenreId = Convert.ToInt32(stillChecked.Tag);
+            }
+            else
+            {
+                selectedGenreId = -1; // Ничего не выбрано
             }
         }
 
@@ -176,10 +181,15 @@ namespace MusicCollectionApp
 
         private void AlbumCheckbox_Unchecked(object sender, RoutedEventArgs e)
         {
-            CheckBox checkBox = sender as CheckBox;
-            if (checkBox != null && checkBox.Tag != null)
+            // Проверяем, остался ли какой-либо чекбокс с галочкой
+            var stillChecked = allAlbumCheckboxes.FirstOrDefault(cb => cb.IsChecked == true);
+            if (stillChecked != null)
             {
-                selectedAlbumId = Convert.ToInt32(checkBox.Tag);
+                selectedAlbumId = Convert.ToInt32(stillChecked.Tag);
+            }
+            else
+            {
+                selectedAlbumId = -1; // Ничего не выбрано
             }
         }
 
