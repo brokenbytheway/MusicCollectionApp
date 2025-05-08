@@ -125,7 +125,7 @@ namespace MusicCollectionApp
         {
             if (selectedPlaylistId == -1)
             {
-                MessageBox.Show("Выберите хотя бы один плейлист!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Выберите плейлист!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
