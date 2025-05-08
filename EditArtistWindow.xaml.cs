@@ -122,7 +122,7 @@ namespace MusicCollectionApp
 
                     if (width != height)
                     {
-                        MessageBox.Show("Изображение не является квадратным! Пожалуйста, выберите другое.");
+                        MessageBox.Show("Изображение не является квадратным! Пожалуйста, выберите другое.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                         selectedImagePath = null;
                         imagePathTextBlock.Text = string.Empty;
                         artistImage.Source = null;
